@@ -18,7 +18,12 @@ jobs:
 
       - name: Setup Android SDK & NDK
         uses: android-actions/setup-android@v3
-      - run: |
+        with:
+          # Указываем только platform-tools, чтобы не устанавливать удалённый пакет 'tools'
+          packages: 'platform-tools'
+
+      - name: Install NDK
+        run: |
           echo "y" | sdkmanager --install "ndk;25.1.8937393"
           echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
 
