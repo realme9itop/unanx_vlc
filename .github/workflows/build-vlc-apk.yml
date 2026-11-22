@@ -21,23 +21,27 @@ jobs:
         with:
           packages: 'platform-tools'
 
-      - name: Install NDK and set environment variables
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Install NDK
         run: |
           echo "y" | sdkmanager --install "ndk;25.1.8937393"
-          echo "ANDROID_SDK=$ANDROID_HOME" >> $GITHUB_ENV
           echo "ANDROID_NDK=$ANDROID_HOME/ndk/25.1.8937393" >> $GITHUB_ENV
+          echo "ANDROID_SDK=$ANDROID_HOME" >> $GITHUB_ENV
 
       - name: Init VLC Gradle environment
         run: |
-          # Дополнительно пробрасываем переменные прямо перед запуском скрипта
-          export ANDROID_SDK=$ANDROID_HOME
-          export ANDROID_NDK=$ANDROID_HOME/ndk/25.1.8937393
+          # Создаем символическую ссылку на установленный Gradle
+          ln -sf $(which gradle) ./gradlew
+          chmod +x ./gradlew
           chmod +x buildsystem/compile.sh
+          
+          # Запускаем инициализацию
           ./buildsystem/compile.sh --init
 
       - name: Build Debug APK
         run: |
-          chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
