@@ -16,19 +16,22 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Android SDK & NDK
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          # Указываем только platform-tools, чтобы не устанавливать удалённый пакет 'tools'
           packages: 'platform-tools'
 
-      - name: Install NDK
+      - name: Install NDK and set environment variables
         run: |
           echo "y" | sdkmanager --install "ndk;25.1.8937393"
-          echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk/25.1.8937393" >> $GITHUB_ENV
+          echo "ANDROID_SDK=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_NDK=$ANDROID_HOME/ndk/25.1.8937393" >> $GITHUB_ENV
 
       - name: Init VLC Gradle environment
         run: |
+          # Дополнительно пробрасываем переменные прямо перед запуском скрипта
+          export ANDROID_SDK=$ANDROID_HOME
+          export ANDROID_NDK=$ANDROID_HOME/ndk/25.1.8937393
           chmod +x buildsystem/compile.sh
           ./buildsystem/compile.sh --init
 
