@@ -1,0 +1,15 @@
+name: Build Unanx VLC
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {submodules: recursive, fetch-depth: 0}
+      - uses: actions/setup-java@v4
+        with: {distribution: 'zulu', java-version: '17'}
+      - run: chmod +x gradlew && ./gradlew :application:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unanx-vlc-apk
+          path: application/build/outputs/apk/debug/application-debug.apk
